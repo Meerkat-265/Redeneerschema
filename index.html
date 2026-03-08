@@ -466,6 +466,7 @@
 <div class="btn-row">
   <button class="btn-clear" onclick="clearAll()">↺ Leegmaken</button>
   <button class="btn-print" onclick="window.print()">🖨 Afdrukken</button>
+  <button class="btn-print" style="background:#2d7a2d;" onclick="downloadIngevuld()">⬇ Download ingevuld</button>
 </div>
 
 <!-- Info strip -->
@@ -500,6 +501,28 @@
     if (confirm('Weet je zeker dat je alle tekst wilt verwijderen?')) {
       document.querySelectorAll('textarea').forEach(t => t.value = '');
     }
+  }
+
+  function downloadIngevuld() {
+    const clone = document.documentElement.cloneNode(true);
+    // Vervang textareas door ingevulde tekst
+    clone.querySelectorAll('textarea').forEach(ta => {
+      const div = document.createElement('div');
+      div.style.cssText = 'padding:10px 12px; font-size:13px; line-height:1.55; white-space:pre-wrap; word-break:break-word;';
+      div.textContent = ta.value || '';
+      ta.parentNode.replaceChild(div, ta);
+    });
+    // Verwijder knoppen
+    clone.querySelectorAll('.btn-row').forEach(el => el.remove());
+
+    const html = '<!DOCTYPE html>' + clone.outerHTML;
+    const blob = new Blob([html], {type: 'text/html'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'redeneerschema-ingevuld.html';
+    a.click();
+    URL.revokeObjectURL(url);
   }
 </script>
 
